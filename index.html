@@ -1,0 +1,1424 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+		<title>Spaceford home</title>
+		<link type="text/css" rel="stylesheet" href="jquery/jquery-ui.min.css">
+		<link type="text/css" rel="stylesheet" href="home.css">
+		<style type="text/css">
+			html, body {
+				overflow: hidden;
+				width: 100%;
+				height: 100%;
+				margin: 0;
+				padding: 0;
+			}
+
+			#renderCanvas {
+				width: 100%;
+				height: 100%;
+				touch-action: none;
+			}
+		</style>
+		<script src="bbl/babylon.2.4.js"></script>
+		<script src="bbl/babylon.objFileLoader.js"></script>
+		<script src="jquery/jquery-3.1.0.min.js"></script>
+		<script src="jquery/jquery-ui.min.js"></script>
+		<script src="bbl/oimo.min.js"></script>
+		<script src="bbl/ManipulationHelpers.min.js"></script>
+	</head>
+	<body>
+		<input id="exitR" type="submit" value="Exit" style="display: block; position:absolute; top:10px; right:10px;">
+		<input id="seth" name="seth" type="hidden" value="">
+		<input id="sets" name="sets" type="hidden" value="">
+                <input id="sett" name="sett" type="hidden" value="">
+		<input id="myrm" name="myrm" type="hidden" value="">
+		<input id="ucid" name="ucid" type="hidden" value="">
+		
+		
+
+		<canvas id="renderCanvas"></canvas>
+
+		<script>
+                        //parent.checkRoom();
+                        var roomUserId = 238;
+                        $.ajax({
+                            type: "POST",
+                            url: "controller.php",
+                            data: {act:'check'},
+                            dataType: 'json',
+                            success: function(json) {
+                                if(json!='') {
+                                    if(json.html!=''){
+                                        $('body').prepend(json.html);
+                                    }
+                                    console.log(json.set);
+                                    $('#seth').val(json.set.hfolder).attr('data',json.set.hid).attr('hfile',json.set.hfile);
+                                    $('#sets').val(json.set.sfolder).attr('data',json.set.sid);
+                                    $('#sett').val(json.set.tfolder).attr('data',json.set.tid).attr('tfile',json.set.tfile);
+                                    $('#myrm').val(json.set.my_room);
+                                    $('#ucid').val(roomUserId);
+                                }
+                            }
+                        });
+
+			var files;
+			var check_form = false;
+
+			$("body").on("click","img.del",function() {
+				var el = $(this).parent();
+				if(el.attr('class') == 'home'){
+					$.ajax({
+				        type: "POST",
+				        url: "controller.php",
+				        data: {act:'del_home', hid:el.attr('data')},
+				        success: function(html) {
+				            if(html!='') {
+				            	if(html=='del') {
+				            		el.css({'display':'none'});
+				            	}else{
+				            		$(".warning").remove();
+				            		$("body").prepend(html);
+				            		var pos = el.position();
+				            		var vr = $(".warning");
+				            		vr.css({'top':pos.top+'px','left':(pos.left+120)+'px','display':'block'});
+				            		setTimeout(function() {
+				            			if($('div').is('.warning')) {
+					            			vr.remove();
+					            		}
+				            		},5000);
+				            	}
+				            }
+				        }
+				    });
+				}else if(el.attr('class') == 'obj') {
+					$.ajax({
+				        type: "POST",
+				        url: "controller.php",
+				        data: {act:'del_obj', oid:el.attr('data')},
+				        success: function(html) {
+				            if(html!='') {
+				            	if(html=='del') {
+				            		el.css({'display':'none'});
+				            	}else{
+				            		$(".warning").remove();
+				            		$("body").prepend(html);
+				            		var pos = el.position();
+				            		var vr = $(".warning");
+				            		vr.css({'top':pos.top+'px','left':(pos.left+120)+'px','display':'block'});
+				            		setTimeout(function() {
+				            			if($('div').is('.warning')) {
+					            			vr.remove();
+					            		}
+				            		},5000);
+				            	}
+				            }
+				        }
+				    });
+				}else{
+					$.ajax({
+				        type: "POST",
+				        url: "controller.php",
+				        data: {act:'del_sky', sid:el.attr('data')},
+				        success: function(html) {
+				            if(html!='') {
+				            	if(html=='del') {
+				            		el.css({'display':'none'});
+				            	}else{
+				            		$(".warning").remove();
+				            		$("body").prepend(html);
+				            		var pos = el.position();
+				            		var vr = $(".warning");
+				            		vr.css({'top':pos.top+'px','left':(pos.left+120)+'px','display':'block'});
+				            		setTimeout(function() {
+				            			vr.remove();
+				            		},5000);
+				            	}
+				            }
+				        }
+				    });
+				}
+			});
+
+			$("body").on("change","#upload_name",function(){
+				if($("#upload_type").val() > 0) {
+					$("#upload_type").css( "border","" );
+					if($(this).val!=""){
+						$.ajax({
+					        type: "POST",
+					        url: "controller.php",
+					        data: {act:'check_name', name:$(this).val(), type: $("#upload_type").val()},
+					        success: function(html) {
+					            if(html!='') {
+					                check_form = true;
+									$("#upload_status").html(html);
+									$("#upload_name").css( "border","1px solid red" );
+					            }else{
+					            	check_form = false;
+					            	$("#upload_status").html('');
+					            	$("#upload_name").css( "border","" );
+					            }
+					        }
+					    });
+					}
+				}else{
+					$("#upload_type").css( "border","1px solid red" );
+				}
+			});
+
+
+			$("body").on("mouseover","#info",function(){
+			    switch($("#upload_type").val()) {
+				  case '1':
+				  	$("#block_info").css( {"display":"block"} );
+				    $("#home_info").css( {"display":"block"} );
+				    break;
+
+				  case '2':
+				  	$("#block_info").css( {"display":"block"} );
+				    $("#sky_info").css( {"display":"block"} );
+				    break;
+
+				  default:
+				  	$("#block_info").css( {"display":"none"} );
+				    $("#home_info").css( {"display":"none"} );
+				    $("#sky_info").css( {"display":"none"} );
+				    break;
+				};
+			});
+
+			$("body").on("mouseleave","#info",function(){
+				setTimeout(function() {
+                                    $("#block_info").css( {"display":"none"} );
+				    $("#home_info").css( {"display":"none"} );
+				    $("#sky_info").css( {"display":"none"} );
+				},5000);
+			});
+
+
+			$("body").on("change","#upload_type",function(){
+				if($("#upload_type").val()>0){
+			    	$("#upload_type").css( "border","" );
+			    	$("#info").css( {"display":"inline-block"} );
+			    }else{
+			    	$("#info").css( {"display":"none"} );
+			    }
+			});
+
+			$("body").on("change","#upload_files",function(){
+				if($("#upload_files").val() != ''){
+			    	$("#upload_files").css( "color","black" );
+			    }
+			});
+
+			$("body").on("click","#add_photo",function(){
+			    $("#file_photo").click();
+			});
+
+			$("body").on("change","#file_photo",function(){
+				event.stopPropagation();
+			    event.preventDefault();
+
+			    var data = new FormData();
+			    data.append("act","load_preview");
+
+			    $.each( this.files, function( key, value ) {
+			        data.append( key, value );
+			    });
+			 	
+			    $.ajax({
+			        url: 'controller.php',
+			        type: 'POST',
+			        data: data,
+			        cache: false,
+			        processData: false, // Не обрабатываем файлы (Don't process the files)
+			        contentType: false, // Так jQuery скажет серверу что это строковой запрос
+			        success: function(html) {
+			        	if(html!=''){
+			        		$("#photo_preview span").css({'display':'none'});
+			        		$("#photo_preview").html(html);
+							if($("#photo_preview img").attr('data')!=undefined){
+			    				$("#photo_preview").css( "border","1px solid black" );
+			    			}
+			        	}
+			        },
+			        error: function( jqXHR, textStatus, errorThrown ){
+			        }
+			    });
+			    
+			});
+
+			$("body").on("change","#upload_files",function(){
+			    files = this.files;
+			});
+ 
+			$("body").on("click","#upload_button",function( event ){
+			    event.stopPropagation();
+			    event.preventDefault();
+			    var check = false;
+			    if($("#upload_name").val()==""){
+			    	check = true;
+			    	$("#upload_name").css( "border","1px solid red" );
+			    }else{
+			    	$("#upload_name").css( "border","" );
+			    }
+
+			    if($("#photo_preview img").attr('data')==undefined){
+			    	check = true;
+			    	$("#photo_preview").css( "border","1px solid red" );
+			    }else{
+			    	$("#photo_preview").css( "border","1px solid black" );
+			    }
+
+			    if($("#upload_type").val()<1){
+			    	check = true;
+			    	$("#upload_type").css( "border","1px solid red" );
+			    }else{
+			    	$("#upload_type").css( "border","" );
+			    }
+			    
+			    if($("#upload_files").val() == ''){
+			    	check = true;
+			    	$("#upload_files").css( "color","red" );
+			    }else{
+			    	$("#upload_files").css( "color","black" );
+			    }
+			    if((check == false) && (check_form == false)) {
+			    	$("#loading").css({'display':''});
+			    	$('#upload_button').prop('disabled', true);
+				    var data = new FormData();
+				    data.append("act","load");
+				    data.append("name",$("#upload_name").val());
+				    data.append("type",$("#upload_type").val());
+				    data.append("img",$("#photo_preview img").attr('data'));
+				    $.each( files, function( key, value ) {
+				        data.append( key, value );
+				    });
+				 
+				    $.ajax({
+				        url: 'controller.php',
+				        type: 'POST',
+				        data: data,
+				        cache: false,
+				        dataType: 'json',
+				        async: true,
+				        processData: false, // Не обрабатываем файлы (Don't process the files)
+				        contentType: false, // Так jQuery скажет серверу что это строковой запрос
+				        success: function(json) {
+				        	$("#loading").css({'display':'none'});
+				        	$('#upload_button').prop('disabled', false);
+				        	if(json.status == 0 && json.obj == 0) {
+				        		$("#upload_status").html("Loading is successful");
+				        		$("#upload_status").css({'color':'black'});
+				        		camera.attachControl(canvas);
+				        		setTimeout(location.reload(),2000);
+				        	}else{
+				        		$("#upload_status").css({'color':'red'});
+				        		$("#upload_status").html('');
+				        		if(json.obj == 1){
+				        			$("#upload_status").html("File obj not found");
+				        		}else{
+				        			$.each( json, function( key, value ) {
+								    	if(key!='status' && key!='obj') {
+								    		$("#upload_status").append(value);
+								    	}
+								    });  
+				        		}
+				        	}
+				        },
+				        error: function( jqXHR, textStatus, errorThrown ){
+				        	$("#loading").css({'display':'none'});
+				        	$('#upload_button').prop('disabled', false);
+				        }
+				    });
+				}
+			 
+			});
+
+                    var canvas = document.getElementById("renderCanvas");
+
+                    var engine = new BABYLON.Engine(canvas, true);
+
+                    var scene;
+
+                    var camera;
+
+                    var loader;
+                    var home;
+                    
+                    var skyboxMaterial;
+                    
+                    var ground;
+
+                    $("body").on("click","#exitR",function(){
+                            camera.detachControl(canvas);
+                            parent.player.ExitFromRoom();
+                    });
+
+                    var pos = function(t) {
+		        t.loadedMeshes.forEach(function(m) {
+	            	m.checkCollisions = true;
+		        });
+		    };
+
+		    var obj_list = [];
+		    var load_list = [];
+
+                    var pos2 = function(t) {
+		    	var maxx = 0;
+		    	var minx = 0;
+		    	var maxy = 0;
+		    	var miny = 0;
+		    	var maxz = 0;
+		    	var minz = 0;
+		    	var centerx = 0;
+		    	var centery = 0;
+		    	var centerz = 0;
+		    	var cnt = 0;
+
+		        t.loadedMeshes.forEach(function(m) {
+	            	centerx += m.getBoundingInfo().boundingBox.center.x;
+	            	centery += m.getBoundingInfo().boundingBox.center.y;
+	            	centerz += m.getBoundingInfo().boundingBox.center.z;
+	            	cnt++;
+
+	            	if((m.getBoundingInfo().boundingBox.maximumWorld.x>60000) || (m.getBoundingInfo().boundingBox.maximumWorld.x>60000) || (m.getBoundingInfo().boundingBox.maximumWorld.x>60000) || (m.getBoundingInfo().boundingBox.minimumWorld.x<-60000) || (m.getBoundingInfo().boundingBox.minimumWorld.x<-60000) || (m.getBoundingInfo().boundingBox.minimumWorld.x<-60000)) {
+	            		m.dispose();
+	            	} else {
+	            		if(maxx < m.getBoundingInfo().boundingBox.maximumWorld.x){
+		            		maxx = m.getBoundingInfo().boundingBox.maximumWorld.x;
+		            	}
+		            	if(minx > m.getBoundingInfo().boundingBox.minimumWorld.x){
+		            		minx = m.getBoundingInfo().boundingBox.minimumWorld.x;
+		            	}
+
+		            	if(maxy < m.getBoundingInfo().boundingBox.maximumWorld.y){
+		            		maxy = m.getBoundingInfo().boundingBox.maximumWorld.y;
+		            	}
+		            	if(miny > m.getBoundingInfo().boundingBox.minimumWorld.y){
+		            		miny = m.getBoundingInfo().boundingBox.minimumWorld.y;
+		            	}
+
+		            	if(maxz <m.getBoundingInfo().boundingBox.maximumWorld.z){
+		            		maxz = m.getBoundingInfo().boundingBox.maximumWorld.z;
+		            	}
+		            	if(minz > m.getBoundingInfo().boundingBox.minimumWorld.z){
+		            		minz = m.getBoundingInfo().boundingBox.minimumWorld.z;
+		            	}
+	            	}
+                    });
+
+            	var lx = maxx - minx;
+            	var ly = maxy - miny;
+            	var lz = maxz - minz;
+            	var obj = new BABYLON.Mesh.CreateBox(t.name, 1, scene);
+            	obj.id = t.id;
+            	obj.isVisible = false;
+   
+            	var matrix = BABYLON.Matrix.Scaling(lx, ly, lz);
+				obj.bakeTransformIntoVertices(matrix);
+
+				centerx = centerx / cnt;
+				centery = centery / cnt;
+				centerz = centerz / cnt;
+
+				var tv = false;
+				if(t.name == 'tv') {
+					tv = true;
+				}
+
+
+				t.loadedMeshes.forEach(function(m) {
+					m.position.x -= centerx;
+					m.position.y -= centery;
+					m.position.z -= centerz;
+					m.parent = obj;
+					if((tv == true) && (m.name == 'tv')) {
+
+						var box = BABYLON.Mesh.CreateBox("video", 1, scene);
+						box.rotation.y = Math.PI;
+						box.scaling = new BABYLON.Vector3(m.getBoundingInfo().boundingBox.maximum.x*2,m.getBoundingInfo().boundingBox.maximum.y,m.getBoundingInfo().boundingBox.maximum.z*2);
+						box.position = new BABYLON.Vector3(m.getBoundingInfo().boundingBox.center.x,m.getBoundingInfo().boundingBox.center.y,m.getBoundingInfo().boundingBox.center.z);
+						var boxMat = new BABYLON.StandardMaterial("boxMat", scene);
+					    boxMat.diffuseColor = new BABYLON.Color3(0, 0, 0);
+
+					    box.material = boxMat;
+
+					    box.parent = m;
+					}
+				});
+
+
+				if(t.tmpPos != undefined) {
+					obj.position = t.tmpPos;
+				}else{
+					obj.position = new BABYLON.Vector3(camera.position.x+100, camera.position.y+100, camera.position.z+100);
+					changePosition(obj);
+				}
+
+				if(t.tmpScl != undefined) {
+					obj_scaling(obj, t.tmpScl.x, t.tmpScl.y, t.tmpScl.z);
+				}else{
+					obj_scaling(obj, 16, 16, 16);
+				}
+
+				if(t.tmpRot != undefined) {
+					obj.rotation = t.tmpRot;
+				}
+
+				//createAxis(obj);
+
+				obj_list.push(obj);
+				/*setTimeout(function(){
+					if(t.tmpPos != undefined) {
+						obj.position = t.tmpPos;
+					}else{
+						obj.position = new BABYLON.Vector3(camera.position.x, camera.position.y, camera.position.z+100);
+						changePosition(obj);
+					}
+					
+					if(t.tmpScl != undefined) {
+						obj_scaling(obj, t.tmpScl.x, t.tmpScl.y, t.tmpScl.z);
+					}
+
+					if(t.tmpRot != undefined) {
+						t.tmpRot.x = parseFloat(t.tmpRot.x);
+						t.tmpRot.y = parseFloat(t.tmpRot.y);
+						t.tmpRot.z = parseFloat(t.tmpRot.z);
+						obj.rotation = t.tmpRot;
+						//obj_rotation(t.tmpRot.x, t.tmpRot.y, t.tmpRot.z, obj, true);
+					}
+				},1000);*/
+		    };
+
+		    var showAxis = function(mesh) {
+		    	mesh = nullParent(mesh);
+		    	for(var i = 0; i < mesh.getChildren().length; i++) {
+		    		var axis = mesh.getChildren()[i];
+		    		if((axis.name=='axisX') || (axis.name=='X') || (axis.name=='axisY') || (axis.name=='Y') || (axis.name=='axisZ') || (axis.name=='Z')) {
+						axis.isVisible = true;
+					}
+		    	}
+		    }
+
+		    var hideAxis = function(mesh) {
+		    	mesh = nullParent(mesh);
+		    	for(var i = 0; i < mesh.getChildren().length; i++) {
+					var axis = mesh.getChildren()[i];
+		    		if((axis.name=='axisX') || (axis.name=='X') || (axis.name=='axisY') || (axis.name=='Y') || (axis.name=='axisZ') || (axis.name=='Z')) {
+						axis.isVisible = false;
+					}
+		    	}
+		    }
+
+		    var createAxis = function(mesh) {
+				var boud_inf = mesh.getBoundingInfo().boundingBox;
+				var max = 0;
+				var min = 0;
+
+				$.each(boud_inf.maximum,function(key,val){
+					if((key == 'x') || (key == 'y') || (key == 'z')) {
+						if((val * mesh.scaling[key]) > max) {
+							max = val * mesh.scaling[key];
+						}
+					}
+				});				
+				$.each(boud_inf.minimum,function(key,val){
+					if((key == 'x') || (key == 'y') || (key == 'z')) {
+						if((val * mesh.scaling[key]) < min) {
+							min = val * mesh.scaling[key];
+						}
+					}
+				});
+
+				var axis = new BABYLON.Mesh.CreateBox("axis", 1, scene);
+				axis.isVisible = false;
+				axis.id = mesh.id;
+
+				var oldPos = null;
+				if(mesh.parent != undefined) {
+					var par = mesh.parent;
+					oldPos = par.position;
+					mesh.parent = null;
+					par.dispose();
+				}else{
+					oldPos = mesh.position;
+				}
+				mesh.position = new BABYLON.Vector3(0,0,0);
+
+				mesh.parent = axis;
+
+				// X AXIS
+			    var axisX = BABYLON.Mesh.CreateLines("axisX", [new BABYLON.Vector3((min)-100, 0, 0), new BABYLON.Vector3((max)+100, 0, 0)], scene);
+				axisX.isVisible = false;
+				//axis.bakeCurrentTransformIntoVertices();
+				axisX.parent = axis;
+			    axisX.color = new BABYLON.Color3(1, 0, 0);
+
+			    var cylXMaterial = new BABYLON.StandardMaterial("boxMaterial", scene);
+				cylXMaterial.diffuseColor = BABYLON.Color3.Red();
+
+			    var cylXP = BABYLON.Mesh.CreateCylinder("X", 70, 0, 30, 45, 1, scene, false);
+			    //axis.bakeCurrentTransformIntoVertices();
+				cylXP.parent = axis;
+				cylXP.isVisible = false;
+				cylXP.position = new BABYLON.Vector3((max)+100, 0, 0);
+				cylXP.rotation.z = -Math.PI / 2;
+				cylXP.material = cylXMaterial;
+
+				var cylXN = BABYLON.Mesh.CreateCylinder("X", 70, 0, 30, 45, 1, scene, false);
+				//axis.bakeCurrentTransformIntoVertices();
+				cylXN.parent = axis;
+				cylXN.isVisible = false;
+				cylXN.position = new BABYLON.Vector3((min)-100, 0, 0);
+				cylXN.rotation.z = Math.PI / 2;
+				cylXN.material = cylXMaterial;
+
+				// Y AXIS
+			    var axisY = BABYLON.Mesh.CreateLines("axisY", [new BABYLON.Vector3(0, (min)-100, 0), new BABYLON.Vector3(0, (max)+100, 0)], scene);
+				axisY.isVisible = false;
+				axisY.parent = axis;
+			    axisY.color = new BABYLON.Color3(0, 1, 0);
+
+			    var cylYMaterial = new BABYLON.StandardMaterial("boxMaterial", scene);
+				cylYMaterial.diffuseColor = BABYLON.Color3.Green();
+
+				var cylYP = BABYLON.Mesh.CreateCylinder("Y", 70, 0, 30, 45, 1, scene, false);
+				cylYP.parent = axis;
+				cylYP.isVisible = false;
+				cylYP.position = new BABYLON.Vector3(0, (max)+100, 0);
+				cylYP.material = cylYMaterial;
+
+				var cylYN = BABYLON.Mesh.CreateCylinder("Y", 70, 0, 30, 45, 1, scene, false);
+				cylYN.parent = axis;
+				cylYN.isVisible = false;
+				cylYN.position = new BABYLON.Vector3(0, (min)-100, 0);
+				cylYN.rotation.z = -Math.PI;
+				cylYN.material = cylYMaterial;
+
+				// Z AXIS
+			    var axisZ = BABYLON.Mesh.CreateLines("axisZ", [new BABYLON.Vector3(0, 0, (min)-100), new BABYLON.Vector3(0, 0, (max)+100)], scene);
+				axisZ.isVisible = false;
+				axisZ.parent = axis;
+			    axisZ.color = new BABYLON.Color3(0, 0, 1);
+
+			    var cylZMaterial = new BABYLON.StandardMaterial("boxMaterial", scene);
+				cylZMaterial.diffuseColor = BABYLON.Color3.Blue();
+
+				var cylZP = BABYLON.Mesh.CreateCylinder("Z", 70, 0, 30, 45, 1, scene, false);
+				cylZP.parent = axis;
+				cylZP.isVisible = false;
+				cylZP.position = new BABYLON.Vector3(0, 0, (max)+100);
+				cylZP.rotation.x = Math.PI / 2;
+				cylZP.material = cylZMaterial;
+
+				var cylZN = BABYLON.Mesh.CreateCylinder("Z", 70, 0, 30, 45, 1, scene, false);
+				cylZN.parent = axis;
+				cylZN.isVisible = false;
+				cylZN.position = new BABYLON.Vector3(0, 0, (min)-100);
+				cylZN.rotation.x = -Math.PI / 2;
+				cylZN.material = cylZMaterial;
+
+				if(oldPos != null) {
+					axis.position = oldPos;
+				}
+			};
+
+			$("body").on("change","#rotationX", function(){
+	       		obj_rotation($(this).val(),null,null,currentMesh);
+	       		$("#sliderRX").slider("value",$(this).val());
+	       	})
+
+	       	$("body").on("change","#rotationY", function(){
+	       		obj_rotation(null,$(this).val(),null,currentMesh);
+	       		$("#sliderRY").slider("value",$(this).val());
+	       	})
+
+	       	$("body").on("change","#rotationZ", function(){
+	       		obj_rotation(null,null,$(this).val(),currentMesh);
+	       		$("#sliderRZ").slider("value",$(this).val());
+	       	})
+
+	       	var obj_rotation = function(x,y,z,mesh,pos2) {
+				pos2 = pos2 || false;
+	       		var rot = false;
+	       		if((x>=0) && (x<=360) && (x!=null)){
+	       			mesh.rotation.x = x*Math.PI/180;
+	       			rot = true;
+	       		}
+	       		if((y>=0) && (y<=360) && (y!=null)){
+	       			mesh.rotation.y = y*Math.PI/180;
+	       			rot = true;
+	       		}
+	       		if((z>=0) && (z<=360) && (z!=null)){
+	       			mesh.rotation.z = z*Math.PI/180;
+	       			rot = true;
+	       		}
+	       		if(rot == true) {
+	       			changeRotation(mesh,pos2);
+	       		}
+	       	}
+
+			var nullParent = function(mesh) {
+				while(mesh.parent != undefined) {
+					mesh = mesh.parent;
+				}
+				return mesh;
+			}
+
+			var changePosition = function(mesh) {
+				var id = mesh.id;
+				mesh = nullParent(mesh);
+				var px = mesh.position.x;
+				var py = mesh.position.y;
+				var pz = mesh.position.z;
+
+				$.ajax({
+			        type: "POST",
+			        url: "controller.php",
+			        data: {block:'room', act:'change_position', bid:id, px:px, py:py, pz:pz}
+			    });
+			}
+
+			var changeScaling = function(mesh) {
+				var sx = mesh.scaling.x;
+				var sy = mesh.scaling.y;
+				var sz = mesh.scaling.z;
+
+				$.ajax({
+			        type: "POST",
+			        url: "controller.php",
+			        data: {block:'room', act:'change_scaling', bid:mesh.id, sx:sx, sy:sy, sz:sz}
+			    });
+			}
+
+			var changeRotation = function(mesh,pos2) {
+				//mesh = nullParent(mesh);
+				pos2 = pos2 || false;
+				if(!pos2) {
+					var rx = mesh.rotation.x;
+					var ry = mesh.rotation.y;
+					var rz = mesh.rotation.z;
+
+					$.ajax({
+						type: "POST",
+						url: "controller.php",
+						data: {block: 'room', act: 'change_rotation', bid: mesh.id, rx: rx, ry: ry, rz: rz}
+					});
+				}
+			}			
+
+			// Events
+		    var startingPoint;
+		    var currentMesh;
+                    var lastMesh;
+                    var pickedAxis = null;
+                    var pickedAxisMesh = null;
+                    var fakeGround = null;
+
+		    var getGroundPosition = function () {
+				return new BABYLON.Vector2(scene.pointerX, scene.pointerY);
+		    }
+			
+			var getGroundPosition2D = function () {
+				var pickinfo = scene.pick(scene.pointerX, scene.pointerY);		
+		        return pickinfo.pickedPoint;
+			}
+
+
+
+		    var onPointerDown = function (evt) {
+		        if (evt.button !== 0) {
+		            return;
+		        }
+
+		        var pickInfo = scene.pick(scene.pointerX, scene.pointerY);
+		        var check = false;
+
+		        if(pickInfo.hit){
+		        	if(pickInfo.pickedMesh.name == "video") {
+		        		if(pickInfo.pickedMesh.video == undefined){
+			        		var videoMat = new BABYLON.StandardMaterial("textVid", scene);
+						    videoMat.diffuseTexture = new BABYLON.VideoTexture("video", ["/video/demo.mp4"], scene, false);
+						    //videoMat.backFaceCulling = false;
+
+						    pickInfo.pickedMesh.material = videoMat;
+						    pickInfo.pickedMesh.video = videoMat.diffuseTexture.video;
+		        		}else if (pickInfo.pickedMesh.video.paused) {
+							pickInfo.pickedMesh.video.play();
+						} else {
+							pickInfo.pickedMesh.video.pause();
+						}
+		        	}
+		        	if(pickInfo.pickedMesh.name == "X" || pickInfo.pickedMesh.name == "Y" || pickInfo.pickedMesh.name == "Z") {
+        				pickedAxisMesh = pickInfo.pickedMesh;
+						pickedAxis = pickInfo.pickedMesh.name;
+						currentMesh = pickInfo.pickedMesh.parent;
+						if (pickInfo.pickedMesh.name == "Y")
+							startingPoint = getGroundPosition(evt);
+						else
+							startingPoint = getGroundPosition2D(evt);
+
+						if (startingPoint) {
+							setTimeout(function () {
+								camera.detachControl(canvas);
+							}, 0);
+						}
+        			}else{
+        				if(pickInfo.pickedMesh.parent != undefined) {
+        					if(pickInfo.pickedMesh.name == "video") {
+        						var sel_mesh = pickInfo.pickedMesh.parent;
+        					}else{
+        						var sel_mesh = pickInfo.pickedMesh;
+        					}
+			        		obj_list.forEach(function(m) {
+						  		if(sel_mesh.parent.name == m.name){
+						  			check = true;
+						  			currentMesh = sel_mesh.parent;
+						  		}
+							});
+			        	}else{
+			        		if(lastMesh != null) {
+								//hideAxis(lastMesh);
+								//lastMesh = null;
+							}
+			        	}
+        			}
+		 
+        			if(check == true) {
+			        	switch(menuId) {
+			        		case 'position':
+		        					startingPoint = getGroundPosition2D(evt);
+									if (startingPoint) {
+										setTimeout(function () {
+											camera.detachControl(canvas);
+										}, 0);
+									}
+									clickMesh(lastMesh, currentMesh);
+			        			break;
+		        			case 'scaling':
+	        						$('#scalingX').val(currentMesh.scaling.x);
+									$('#scalingY').val(currentMesh.scaling.y);
+									$('#scalingZ').val(currentMesh.scaling.z);
+		        				break;
+	        				case 'rotation':
+	        						$('#rotationX').val((currentMesh.rotation.x*180/Math.PI).toFixed(0));
+									$('#rotationY').val((currentMesh.rotation.y*180/Math.PI).toFixed(0));
+									$('#rotationZ').val((currentMesh.rotation.z*180/Math.PI).toFixed(0));
+		        				break;
+	        				case 'delete':
+	        						$("#del_obj_scn span").html(currentMesh.name);
+	        						$("#del_obj_scn").css({"display":"block"});
+		        				break;
+			        	}
+			        }
+		        }
+		    }
+
+		    $("body").on("click","#del_btn",function(){
+		    	if((menuId == "delete") && (currentMesh.id>0)){
+		    		$.ajax({
+						type: "POST",
+						url: "controller.php",
+						data: {block: 'room', act: 'del_obj_scn', oid: currentMesh.id},
+						success: function(html){
+							if(html == '1') {
+								var delMesh = nullParent(currentMesh);
+								delMesh.dispose();
+							}
+						}
+					});
+		    	}
+		    })
+
+			$("body").on("click","#cnl_btn",function(){
+		    	$("#del_obj_scn span").html("");
+				$("#del_obj_scn").css({"display":"none"});
+		    })		    
+
+		    var onPointerUp = function () {
+		        if (startingPoint) {
+		            camera.attachControl(canvas, true);
+		            startingPoint = null;
+					pickedAxis = null;
+					if (fakeGround != null)
+						fakeGround.dispose();
+		            return;
+		        }
+		    }
+
+		    var onPointerMove = function (evt) {
+		        if (!startingPoint) {
+		            return;
+		        }
+				if (pickedAxis == "Y")
+					var current = getGroundPosition(evt);
+				else
+					var current = getGroundPosition2D(evt);
+					
+		        if (!current) {
+		            return;
+		        }
+				
+				var compensationFactor = 10;
+				if (pickedAxis != null)
+				{
+					switch(pickedAxis){
+						case "X":
+							var diff = current.subtract(startingPoint);
+							diff.y = 0;
+							diff.z = 0;
+							currentMesh.position.x += diff.x;
+						break;
+						case "Y":
+							var diff = current.subtract(startingPoint);
+							currentMesh.position.y -= diff.y/compensationFactor;
+						break;
+						case "Z":
+							var diff = current.subtract(startingPoint);
+							diff.x = 0;
+							diff.y = 0;
+							currentMesh.position.z += diff.z;
+						break;
+					}     
+				} else {
+					//var diff = current.subtract(startingPoint);
+					//var y = currentMesh.position.y;
+					//currentMesh.position = new BABYLON.Vector3(diff.x, y, diff.z);
+				}
+				
+		        startingPoint = current;
+				changePosition(currentMesh);
+		    }
+
+			function clickMesh(lastMesh, currentMesh){
+				showAxis(currentMesh);
+				
+				if(lastMesh != null){
+					hideAxis(lastMesh);
+				}
+			}
+
+			var hideAllAxis = function(){
+				if(currentMesh != null){
+					hideAxis(currentMesh);
+				}
+				if(lastMesh != null){
+					hideAxis(lastMesh);
+					lastMesh = null;
+				}
+			}
+
+
+			var createScene = function () {
+
+			    scene = new BABYLON.Scene(engine);
+			    scene.gravity = new BABYLON.Vector3(0, -90, 0);
+			   	
+			   	var light = new BABYLON.HemisphericLight(
+				    "Hemi1", 
+				    new BABYLON.Vector3(0, 20, 0), 
+				    scene
+				);
+			    camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 200, 0), scene);
+
+                            camera.attachControl(canvas, false);
+                            camera.speed = 300;
+                            camera.inertia = 0.2;
+                            camera.keysUp = [87,38];
+                            camera.keysDown = [83,40];
+                            camera.keysLeft = [65,37];
+                            camera.keysRight = [68,39];
+
+                            camera.fov = 1;
+                            camera.maxZ = 100000;
+                            camera.minZ = 0;
+
+                            camera.checkCollisions = true;
+                            camera.applyGravity = true;
+                            camera.ellipsoid = new BABYLON.Vector3(0.1, 350, 0.1);
+
+                            camera.position = new BABYLON.Vector3(0, 680, 0);
+
+                            scene.collisionsEnabled = true;
+                            
+                            ground = BABYLON.Mesh.CreateGround("ground", 60000, 60000, 2, scene);
+                            ground.position = new BABYLON.Vector3(0, -520, 0);
+                            
+                            var groundTexture = new BABYLON.Texture("terrain/"+$("#sett").val()+"/"+$("#sett").attr('tfile'),scene);
+                            groundTexture.uOffset = 0;
+                            groundTexture.vOffset = 0;
+                            groundTexture.uScale = 50;
+                            groundTexture.vScale = 50;
+                            
+                            var groundMaterial = new BABYLON.StandardMaterial("groundMaterial", scene);
+                            groundMaterial.diffuseTexture = groundTexture;
+        
+                            ground.material = groundMaterial;
+
+                            BABYLON.OBJFileLoader.OPTIMIZE_WITH_UV = true;
+
+			    loader = new BABYLON.AssetsManager(scene);
+
+			    home = loader.addMeshTask("home", "", "buildings/"+$("#seth").val()+"/", $("#seth").attr('hfile'));
+			    home.onSuccess = pos;
+
+			    var skybox = BABYLON.Mesh.CreateBox("skyBox", 60000.0, scene);
+				skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
+				skyboxMaterial.backFaceCulling = false;
+				skyboxMaterial.disableLighting = true;
+				skybox.material = skyboxMaterial;
+				skybox.infiniteDistance = true;
+				skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
+				skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+			    skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("skybox/"+$("#sets").val()+"/", scene);
+				skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+
+			    loader.onFinish = function() {
+			        engine.runRenderLoop(function () {
+			            scene.render();
+			        });
+			    };
+
+			    loader.load();
+
+			    /*obja = new BABYLON.Mesh.CreateBox("myparent", 1, scene);
+			    obja.checkCollisions = true;
+    			obja.showBoundingBox = true;
+    			objaMaterial = new BABYLON.StandardMaterial("obja", scene);
+    			objaMaterial.alpha = 0.5;
+    			obja.material = objaMaterial;*/
+
+			    scene.workerCollisions = true;
+
+			    return scene;
+			};
+
+
+
+			var si = setInterval(function() {
+				if(($("#seth").val()!='') && ($("#sets").val()!='')){
+					scene = createScene();
+					if($("div").is("#block_scaling")){
+						$("#sliderX").slider({
+							value : 1,//Значение, которое будет выставлено слайдеру при загрузке
+						  	min : -99,//Минимально возможное значение на ползунке
+						  	max : 100,//Максимально возможное значение на ползунке
+						  	step : 1,//Шаг, с которым будет двигаться ползунок
+				            change: function( event, ui ) {
+				            	if(currentMesh != null) {
+				            		obj_scaling(currentMesh, $("#sliderX").slider("value"), 0, 0);
+									//changeScaling(currentMesh);
+				            	}
+				            }
+				        });
+				        $("#sliderY").slider({
+							value : 0,//Значение, которое будет выставлено слайдеру при загрузке
+						  	min : -99,//Минимально возможное значение на ползунке
+						  	max : 100,//Максимально возможное значение на ползунке
+						  	step : 1,//Шаг, с которым будет двигаться ползунок
+						  	change: function( event, ui ) {
+						  		if(currentMesh != null) {
+					            	obj_scaling(currentMesh, 0, $("#sliderY").slider("value"), 0);
+									//changeScaling(currentMesh);
+					            }
+				            }
+				        });
+				        $("#sliderZ").slider({
+							value : 0,//Значение, которое будет выставлено слайдеру при загрузке
+						  	min : -99,//Минимально возможное значение на ползунке
+						  	max : 100,//Максимально возможное значение на ползунке
+						  	step : 1,//Шаг, с которым будет двигаться ползунок
+						  	change: function( event, ui ) {
+						  		if(currentMesh != null) {
+					            	obj_scaling(currentMesh, 0, 0, $("#sliderZ").slider("value"));
+									//changeScaling(currentMesh);
+					            }
+				            }
+				        });
+				        $("#sliderRX").slider({
+							value : 1,//Значение, которое будет выставлено слайдеру при загрузке
+						  	min : 0,//Минимально возможное значение на ползунке
+						  	max : 360,//Максимально возможное значение на ползунке
+						  	step : 1,//Шаг, с которым будет двигаться ползунок
+				            change: function( event, ui ) {
+				            	if((currentMesh != null) && ($("#rotationX").val() != $("#sliderRX").slider("value"))) {
+				            		$("#rotationX").val($("#sliderRX").slider("value"));
+				            		obj_rotation($("#sliderRX").slider("value"),null,null,currentMesh);
+				            	}
+				            }
+				        });
+				        $("#sliderRY").slider({
+							value : 0,//Значение, которое будет выставлено слайдеру при загрузке
+						  	min : 0,//Минимально возможное значение на ползунке
+						  	max : 360,//Максимально возможное значение на ползунке
+						  	step : 1,//Шаг, с которым будет двигаться ползунок
+						  	change: function( event, ui ) {
+						  		if((currentMesh != null) && ($("#rotationY").val() != $("#sliderRY").slider("value"))) {
+					            	$("#rotationY").val($("#sliderRY").slider("value"));
+					            	obj_rotation(null,$("#sliderRY").slider("value"),null,currentMesh);
+					            }
+				            }
+				        });
+				        $("#sliderRZ").slider({
+							value : 0,//Значение, которое будет выставлено слайдеру при загрузке
+						  	min : 0,//Минимально возможное значение на ползунке
+						  	max : 360,//Максимально возможное значение на ползунке
+						  	step : 1,//Шаг, с которым будет двигаться ползунок
+						  	change: function( event, ui ) {
+						  		if((currentMesh != null) && ($("#rotationZ").val() != $("#sliderRZ").slider("value"))) {
+					            	$("#rotationZ").val($("#sliderRZ").slider("value"));
+					            	obj_rotation(null,null,$("#sliderRZ").slider("value"),currentMesh);
+					            }
+				            }
+				        });
+					}
+					scene.onPointerDown = onPointerDown;
+					loadObjects();
+					clearInterval(si);
+				}
+			},100);
+
+			$("body").on("change","#scalingX, #scalingY, #scalingZ",function() {
+				if(currentMesh != null) {
+					obj_scaling(currentMesh,$("#scalingX").val(),$("#scalingY").val(),$("#scalingZ").val());
+				}
+			});
+
+			var obj_scaling = function(mesh, x, y, z) {
+	       		var scal = mesh.scaling;
+	       		var scl = false;
+	       		if((scal.x != x) && (x != 0)){
+	       			if(x < 0){
+	       				x = (1 - (x/100*-1)).toFixed(2);
+	       			}
+	       			$("#scalingX").val(x);
+	       			scal.x = x;
+	       			scl = true;
+	       		}
+	       		if((scal.y != y) && (y != 0)){
+	       			if(y < 0){
+	       				y = (1 - (y/100*-1)).toFixed(2);
+	       			}
+	       			$("#scalingY").val(y);
+	       			scal.y = y;
+	       			scl = true;
+	       		}
+	       		if((scal.z != z) && (z != 0)){
+	       			if(z < 0){
+	       				z = (1 - (z/100*-1)).toFixed(2);
+	       			}
+	       			$("#scalingZ").val(z);
+	       			scal.z = z;
+	       			scl = true;
+	       		}
+	       		mesh.scaling = scal;
+	       		createAxis(mesh);
+	       		if(scl == true) {
+	       			changeScaling(mesh);
+	       		}
+	       	}
+
+	       	var loadObjects = function() {
+	       		var myrm = $("#myrm").val();
+	       		var ucid = $("#ucid").val();
+	       		if(1){
+		       		$.ajax({
+				        type: "POST",
+				        url: "controller.php",
+				        data: {act:'load_obj', mr: myrm, uid: ucid},
+				        dataType: 'json',
+				        success: function(json) {
+				            if(json!='') {
+				                load_obj = new BABYLON.AssetsManager(scene);
+				                json.forEach(function(obj) {
+				                	load_list[obj.name] = load_obj.addMeshTask(obj.name, "", "objects/"+obj.folder+"/", obj.file);
+				                	load_list[obj.name].id = obj.id
+				                	load_list[obj.name].tmpPos = new BABYLON.Vector3(parseFloat(obj.px),parseFloat(obj.py),parseFloat(obj.pz));
+				                	load_list[obj.name].tmpScl = new BABYLON.Vector3(parseFloat(obj.sx),parseFloat(obj.sy),parseFloat(obj.sz));
+				                	load_list[obj.name].tmpRot = new BABYLON.Vector3(parseFloat(obj.rx),parseFloat(obj.ry),parseFloat(obj.rz));
+				                	load_list[obj.name].onSuccess = pos2;
+			                	});
+							    load_obj.load();
+				            }
+				        }
+				    });
+		       	}
+	       	}
+
+			window.addEventListener("resize", function (){
+				engine.resize();
+			});
+
+			var change_home = function(folder,file){
+				home.loadedMeshes.forEach(function(m) {
+		           m.dispose();
+		        });
+		        loader = new BABYLON.AssetsManager(scene);
+		        home = loader.addMeshTask("home", "", "buildings/"+folder+"/", file);
+			    home.onSuccess = pos;
+			    loader.load();
+			    camera.position = new BABYLON.Vector3(0, 680, 0);
+			};
+
+			var menuId = 'none';
+			$("body").on("click","#bbl_menu",function(e) {
+				if(menuId == e.target.id){
+					menuId = 'none'
+				}else{
+					menuId = e.target.id
+				}
+				switch(menuId) {
+					case 'settings':
+						$('#bbl_upload').css({'display': 'none'});
+						$("#block_scaling").css({"display":"none"});
+						$('#block_rotation').css({'display': 'none'});
+
+						$('#settings').css({'box-shadow':'0 0 10px #9d9e9e'});
+						$('#import').css({'box-shadow':''});
+						$('#position').css({'box-shadow':''});
+						$('#scaling').css({'box-shadow':''});
+						$('#rotation').css({'box-shadow':''});
+						$('#delete').css({'box-shadow':''});
+						$("#cnl_btn").click();
+
+						$("#model_block").css({"display":"block"});
+						//scene.onPointerDown = null;
+					    scene.onPointerUp = null;
+					    scene.onPointerMove = null;
+						camera.attachControl(canvas);
+						hideAllAxis();
+						break;
+					case 'import':
+						$("#model_block").css({"display":"none"});
+						$("#block_scaling").css({"display":"none"});
+						$('#block_rotation').css({'display': 'none'});
+
+						$('#settings').css({'box-shadow':''});
+						$('#import').css({'box-shadow':'0 0 10px #9d9e9e'});
+						$('#position').css({'box-shadow':''});
+						$('#scaling').css({'box-shadow':''});
+						$('#rotation').css({'box-shadow':''});
+						$('#delete').css({'box-shadow':''});
+						$("#cnl_btn").click();
+
+						$('#bbl_upload').css({'display': 'block'});
+						//scene.onPointerDown = null;
+					    scene.onPointerUp = null;
+					    scene.onPointerMove = null;
+						camera.detachControl(canvas);
+						hideAllAxis();
+						break;
+					case 'position':
+						$("#model_block").css({"display":"none"});
+						$('#bbl_upload').css({'display': 'none'});
+						$("#block_scaling").css({"display":"none"});
+						$('#block_rotation').css({'display': 'none'});
+
+						$('#settings').css({'box-shadow':''});
+						$('#import').css({'box-shadow':''});
+						$('#position').css({'box-shadow':'0 0 10px #9d9e9e'});
+						$('#scaling').css({'box-shadow':''});
+						$('#rotation').css({'box-shadow':''});
+						$('#delete').css({'box-shadow':''});
+						$("#cnl_btn").click();
+
+						//scene.onPointerDown = onPointerDown;
+					    scene.onPointerUp = onPointerUp;
+					    scene.onPointerMove = onPointerMove;
+					    camera.attachControl(canvas);
+						break;
+					case 'scaling':
+						$("#model_block").css({"display":"none"});
+						$('#bbl_upload').css({'display': 'none'});
+						$('#block_rotation').css({'display': 'none'});
+
+						$("#block_scaling").css({"display":"block"});
+
+						$('#settings').css({'box-shadow':''});
+						$('#import').css({'box-shadow':''});
+						$('#position').css({'box-shadow':''});
+						$('#scaling').css({'box-shadow':'0 0 10px #9d9e9e'});
+						$('#rotation').css({'box-shadow':''});
+						$('#delete').css({'box-shadow':''});
+						$("#cnl_btn").click();
+
+						//scene.onPointerDown = onPointerDown;
+					    scene.onPointerUp = onPointerUp;
+					    scene.onPointerMove = onPointerMove;
+					    camera.attachControl(canvas);
+					    hideAllAxis();
+						break;
+					case 'rotation':
+						$("#model_block").css({"display":"none"});
+						$('#bbl_upload').css({'display': 'none'});
+						$("#block_scaling").css({"display":"none"});
+
+						$('#block_rotation').css({'display': 'block'});
+
+						$('#settings').css({'box-shadow':''});
+						$('#import').css({'box-shadow':''});
+						$('#position').css({'box-shadow':''});
+						$('#scaling').css({'box-shadow':''});
+						$('#rotation').css({'box-shadow':'0 0 10px #9d9e9e'});
+						$('#delete').css({'box-shadow':''});
+						$("#cnl_btn").click();
+
+						//scene.onPointerDown = onPointerDown;
+					    scene.onPointerUp = onPointerUp;
+					    scene.onPointerMove = onPointerMove;
+					    camera.attachControl(canvas);
+					    hideAllAxis();
+						break;
+					case 'delete':
+						$("#model_block").css({"display":"none"});
+						$('#bbl_upload').css({'display': 'none'});
+						$("#block_scaling").css({"display":"none"});
+						$('#block_rotation').css({'display': 'none'});
+						$('#settings').css({'box-shadow':''});
+						$('#import').css({'box-shadow':''});
+						$('#position').css({'box-shadow':''});
+						$('#scaling').css({'box-shadow':''});
+						$('#rotation').css({'box-shadow':''});
+						$('#delete').css({'box-shadow':'0 0 10px #9d9e9e'});
+
+						//scene.onPointerDown = onPointerDown;
+					    scene.onPointerUp = onPointerUp;
+					    scene.onPointerMove = onPointerMove;
+					    camera.attachControl(canvas);
+					    hideAllAxis();
+						break;
+					default:
+						$("#model_block").css({"display":"none"});
+						$('#bbl_upload').css({'display': 'none'});
+						$("#block_scaling").css({"display":"none"});
+						$('#block_rotation').css({'display': 'none'});
+						$('#settings').css({'box-shadow':''});
+						$('#import').css({'box-shadow':''});
+						$('#position').css({'box-shadow':''});
+						$('#scaling').css({'box-shadow':''});
+						$('#rotation').css({'box-shadow':''});
+						$('#delete').css({'box-shadow':''});
+						$("#cnl_btn").click();
+						//scene.onPointerDown = null;
+					    scene.onPointerUp = null;
+					    scene.onPointerMove = null;
+						camera.attachControl(canvas);
+						hideAllAxis();
+						break;
+				}
+			});
+
+			/*$("body").on("click","#settings",function(){
+				if($('#model_block').css('display') == 'none'){
+					if($('#bbl_upload').css('display') == 'block') {
+						$('#bbl_upload').css({'display': 'none'});
+					}
+					$("#model_block").css({"display":"block"});
+					
+					scene.onPointerDown = onPointerDown;
+				    scene.onPointerUp = onPointerUp;
+				    scene.onPointerMove = onPointerMove;
+				}else{
+					$("#model_block").css({"display":"none"});
+
+					scene.onPointerDown = null;
+				    scene.onPointerUp = null;
+				    scene.onPointerMove = null;
+				}
+			});
+
+			$("body").on("click","#import",function() {
+				if($('#bbl_upload').css('display') == 'none') {
+					if($('#model_block').css('display') == 'block') {
+						$('#model_block').css({'display': 'none'});
+					}
+					$('#bbl_upload').css({'display': 'block'});
+					camera.detachControl(canvas);
+				}else{
+					$('#bbl_upload').css({'display': 'none'});
+					camera.attachControl(canvas);
+				}
+			});*/
+
+			$("body").on("click",".home",function(e){
+				if(e.target.className == 'home'){
+					$.ajax({
+				        type: "POST",
+				        url: "controller.php",
+				        data: {block:'room', act:'change_home', hid:$(this).attr("data")},
+				        dataType: 'json',
+				        success: function(json) {
+				            if(json!='') {
+				                change_home(json.folder,json.file);
+								$("#settings").click();
+				            }
+				        }
+				    });
+				}
+			});
+
+			$("body").on("click",".obj",function(e){
+				if(e.target.className == 'obj'){
+					$.ajax({
+				        type: "POST",
+				        url: "controller.php",
+				        data: {block:'room', act:'add_obj', oid:$(this).attr("data")},
+				        dataType: 'json',
+				        success: function(json) {
+				            if(json!='') {
+				                load_obj = new BABYLON.AssetsManager(scene);
+						        load_list[json.name] = load_obj.addMeshTask(json.name, "", "objects/"+json.folder+"/", json.file);
+							    load_list[json.name].onSuccess = pos2;
+							    load_obj.load();
+								$("#settings").click();
+				            }
+				        }
+				    });
+				}
+			});
+
+			$("body").on("click",".skybox",function(e){
+				if(e.target.className == 'skybox'){
+					$.ajax({
+				        type: "POST",
+				        url: "controller.php",
+				        data: {block:'room', act:'change_sky', sid:$(this).attr("data")},
+				        success: function(html) {
+				            if(html!='') {
+                                                skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("skybox/"+html+"/", scene);
+                                                skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+                                                $("#settings").click();
+				            }
+				        }
+				    });
+				}
+			});
+                        
+                        $("body").on("click",".terrain",function(e){
+				if(e.target.className == 'terrain'){
+					$.ajax({
+				        type: "POST",
+				        url: "controller.php",
+				        data: {block:'room', act:'change_terrain', tid:$(this).attr("data")},
+				        success: function(html) {
+				            if(html!='') {
+                                                var groundTexture = new BABYLON.Texture("terrain/"+html,scene);
+                                                groundTexture.uOffset = 0;
+                                                groundTexture.vOffset = 0;
+                                                groundTexture.uScale = 50;
+                                                groundTexture.vScale = 50;
+
+                                                var groundMaterial = new BABYLON.StandardMaterial("groundMaterial", scene);
+                                                groundMaterial.diffuseTexture = groundTexture;
+
+                                                ground.material = groundMaterial;
+                                                $("#settings").click();
+				            }
+				        }
+				    });
+				}
+			});
+		</script>		
+	</body>
+</html>

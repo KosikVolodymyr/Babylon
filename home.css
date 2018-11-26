@@ -1,0 +1,105 @@
+.import {
+	margin: 5px;
+}
+
+#info {
+	display: none;
+	width: 19px;
+    height: 19px;
+    position: relative;
+    top: 5px;
+}
+
+#block_info {
+	display: none;
+	position: absolute;
+    top: 75px;
+    left: 157px;
+    max-width: 400px;
+    padding: 8px;
+    background-color: #cccccc;
+    border: 3px solid #424242;
+    border-radius: 5px;
+}
+
+#home_info, #sky_info{
+	display:none;
+}
+
+.warning {
+	display: none;
+	position: absolute;
+    max-width: 400px;
+    padding: 8px;
+    background-color: #cccccc;
+    border: 3px solid #424242;
+    border-radius: 5px;
+    opacity: 1 !important;
+    z-index: 2;
+}
+
+#block_scaling {
+    display: none;
+    position: absolute;
+    top: 48px;
+    left: 118px;
+    width: 400px;
+    padding: 15px;
+    background-color: #cccccc;
+    border: 3px solid #424242;
+    border-radius: 5px;
+}
+
+#block_rotation {
+    display: none;
+    position: absolute;
+    top: 48px;
+    left: 156px;
+    width: 400px;
+    padding: 15px;
+    background-color: #cccccc;
+    border: 3px solid #424242;
+    border-radius: 5px;
+}
+
+#block_scaling input, #block_rotation input {
+    display: block;
+    /*margin: 2px 0 6px 0;*/
+}
+
+#block_scaling span, #block_rotation span {
+    display: block;
+    /*margin: 10px 0 0 2px;*/
+}
+
+#sliderX, #sliderY, #sliderZ, #sliderRX, #sliderRY, #sliderRZ {
+    margin: 6px 0 6px 0;
+}
+
+#del_obj_scn {
+    display: none;
+    position: absolute;
+    top: 48px;
+    left: 192px;
+    width: 300px;
+    padding: 15px;
+    background-color: #cccccc;
+    border: 3px solid #424242;
+    border-radius: 5px;
+}
+
+.btn {
+    display: inline-block;
+    cursor: pointer;
+    float: right;
+    border: 2px solid #424242;
+    border-radius: 4px;
+    margin: 0 0 0 5px;
+    padding: 2px;
+}
+
+#del_btn {
+}
+
+#cnl_btn {
+}

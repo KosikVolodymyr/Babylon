@@ -1,0 +1,316 @@
+# 3ds Max Wavefront OBJ Exporter v0.97b - (c)2007 guruware
+# File Created: 24.08.2016 11:17:36
+
+newmtl marble
+	Ns 43.2193
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 0.6000 0.7686 0.6980
+	Ks 0.3300 0.3300 0.3300
+	Ke 0.0000 0.0000 0.0000
+	map_Ka marble.jpg
+	map_Kd marble.jpg
+
+newmtl _Wood_cherry_
+	Ns 43.2193
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 0.6000 0.4078 0.2392
+	Ks 0.3300 0.3300 0.3300
+	Ke 0.0000 0.0000 0.0000
+	map_Ka _Wood_cherry_.jpg
+	map_Kd _Wood_cherry_.jpg
+
+newmtl chrome
+	Ns 43.2193
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 0.2392 0.2392 0.2392
+	Ks 0.3300 0.3300 0.3300
+	Ke 0.0000 0.0000 0.0000
+
+newmtl _Gray_Glass_
+	Ns 43.2193
+	Ni 1.5000
+	d 0.1000
+	Tr 0.9000
+	Tf 0.1000 0.1000 0.1000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 0.7294 0.7294 0.7294
+	Ks 0.3300 0.3300 0.3300
+	Ke 0.0000 0.0000 0.0000
+
+newmtl Translucent_Glass_Gray
+	Ns 43.2193
+	Ni 1.5000
+	d 0.6000
+	Tr 0.4000
+	Tf 0.6000 0.6000 0.6000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 0.5020 0.5020 0.5020
+	Ks 0.3300 0.3300 0.3300
+	Ke 0.0000 0.0000 0.0000
+
+newmtl _Ivory_1
+	Ns 43.2193
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 0.9412
+	Ks 0.3300 0.3300 0.3300
+	Ke 0.0000 0.0000 0.0000
+
+newmtl roof
+	Ns 43.2193
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 0.2667 0.2510 0.2627
+	Ks 0.3300 0.3300 0.3300
+	Ke 0.0000 0.0000 0.0000
+	map_Ka roof.jpg
+	map_Kd roof.jpg
+
+newmtl _White_
+	Ns 43.2193
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.3300 0.3300 0.3300
+	Ke 0.0000 0.0000 0.0000
+
+newmtl travertine2
+	Ns 43.2193
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 0.9255 0.8745 0.8510
+	Ks 0.3300 0.3300 0.3300
+	Ke 0.0000 0.0000 0.0000
+	map_Ka travertine2.jpg
+	map_Kd travertine2.jpg
+
+newmtl PDM_Lf_Cooper_Plastic_White
+	Ns 43.2193
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 0.8157 0.8157 0.8157
+	Ks 0.3300 0.3300 0.3300
+	Ke 0.0000 0.0000 0.0000
+
+newmtl PDM_Lf_Cooper_Glass_Translucent
+	Ns 43.2193
+	Ni 1.5000
+	d 0.1500
+	Tr 0.8500
+	Tf 0.1500 0.1500 0.1500 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 0.8000 0.8000 0.8000
+	Ks 0.3300 0.3300 0.3300
+	Ke 0.0000 0.0000 0.0000
+
+newmtl PDM_Lf_Cooper_Chrome
+	Ns 43.2193
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 0.2510 0.2510 0.2510
+	Ks 0.3300 0.3300 0.3300
+	Ke 0.0000 0.0000 0.0000
+
+newmtl PDM_glass_thin_02
+	Ns 43.2193
+	Ni 1.5000
+	d 0.1500
+	Tr 0.8500
+	Tf 0.1500 0.1500 0.1500 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 0.8000 0.8000 0.8000
+	Ks 0.3300 0.3300 0.3300
+	Ke 0.0000 0.0000 0.0000
+
+newmtl PDM_Aluminium_polished_01
+	Ns 43.2193
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 0.7294 0.7294 0.7294
+	Ks 0.3300 0.3300 0.3300
+	Ke 0.0000 0.0000 0.0000
+	map_Ka PDM_Aluminium_polished_01.png
+	map_Kd PDM_Aluminium_polished_01.png
+
+newmtl travertine
+	Ns 43.2193
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 0.9373 0.8863 0.8627
+	Ks 0.3300 0.3300 0.3300
+	Ke 0.0000 0.0000 0.0000
+	map_Ka travertine.jpg
+	map_Kd travertine.jpg
+
+newmtl _Stone_squares_
+	Ns 43.2193
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 0.8275 0.7804 0.7255
+	Ks 0.3300 0.3300 0.3300
+	Ke 0.0000 0.0000 0.0000
+	map_Ka _Stone_squares_.jpg
+	map_Kd _Stone_squares_.jpg
+
+newmtl FrontColor
+	Ns 43.2193
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 1.0000
+	Ks 0.3300 0.3300 0.3300
+	Ke 0.0000 0.0000 0.0000
+
+newmtl pebbles
+	Ns 43.2193
+	Ni 1.5000
+	d 0.9900
+	Tr 0.0100
+	Tf 0.9900 0.9900 0.9900 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 0.5608 0.5686 0.5333
+	Ks 0.3300 0.3300 0.3300
+	Ke 0.0000 0.0000 0.0000
+	map_Ka pebbles.jpg
+	map_Kd pebbles.jpg
+
+newmtl _Stone_squares_1
+	Ns 43.2193
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 0.8275 0.7804 0.7255
+	Ks 0.3300 0.3300 0.3300
+	Ke 0.0000 0.0000 0.0000
+	map_Ka _Stone_squares_1.jpg
+	map_Kd _Stone_squares_1.jpg
+
+newmtl _Ivory_
+	Ns 43.2193
+	Ni 1.5000
+	d 0.9400
+	Tr 0.0600
+	Tf 0.9400 0.9400 0.9400 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 1.0000 1.0000 0.9412
+	Ks 0.3300 0.3300 0.3300
+	Ke 0.0000 0.0000 0.0000
+
+newmtl _Water_pool_
+	Ns 43.2193
+	Ni 1.5000
+	d 0.4400
+	Tr 0.5600
+	Tf 0.4400 0.4400 0.4400 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 0.3137 0.3882 0.3647
+	Ks 0.3300 0.3300 0.3300
+	Ke 0.0000 0.0000 0.0000
+	map_Ka _Water_pool_.jpg
+	map_Kd _Water_pool_.jpg
+
+newmtl Wood_Cherry_Original
+	Ns 43.2193
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 0.5961 0.3373 0.1647
+	Ks 0.3300 0.3300 0.3300
+	Ke 0.0000 0.0000 0.0000
+	map_Ka Wood_Cherry_Original.jpg
+	map_Kd Wood_Cherry_Original.jpg
+
+newmtl Carrera_Marble
+	Ns 43.2193
+	Ni 1.5000
+	d 0.0000
+	Tr 1.0000
+	Tf 0.0000 0.0000 0.0000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 0.8078 0.8078 0.8078
+	Ks 0.3300 0.3300 0.3300
+	Ke 0.0000 0.0000 0.0000
+	map_Ka Carrera_Marble.jpg
+	map_Kd Carrera_Marble.jpg
+
+newmtl Water_Dark_Blue
+	Ns 43.2193
+	Ni 1.5000
+	d 0.2000
+	Tr 0.8000
+	Tf 0.2000 0.2000 0.2000 
+	illum 2
+	Ka 0.0000 0.0000 0.0000
+	Kd 0.0784 0.5647 0.7255
+	Ks 0.3300 0.3300 0.3300
+	Ke 0.0000 0.0000 0.0000
+	map_Ka Water_Dark_Blue.jpg
+	map_Kd Water_Dark_Blue.jpg
